@@ -1,0 +1,131 @@
+version: "3.3"
+
+services:
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+    environment:
+      - node.name=es01
+      - cluster.name=es7-docker-cluster
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ports:
+      - "9201:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ems_dev_data01:/usr/share/elasticsearch/data
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+    environment:
+      - node.name=es02
+      - cluster.name=es7-docker-cluster
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ports:
+      - "9202:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ems_dev_data02:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    environment:
+      - TZ=Europe/Brussels
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - SERVER_NAME=kibana.localhost
+    ports:
+      - "5601:5601"
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - TZ=Europe/Brussels
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - "5432:5432"
+    volumes:
+      - ems_dev_postgres:/var/lib/postgresql/data
+
+  mariadb:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=mariadb
+      - TZ=Europe/Brussels
+    volumes:
+      - ems_dev_mariadb:/config
+
+  tika:
+    image: apache/tika
+    ports:
+      - "9998:9998"
+
+  minio:
+    image: minio/minio
+    volumes:
+      - ems_dev_s3:/data
+    environment:
+      MINIO_ACCESS_KEY: accesskey
+      MINIO_SECRET_KEY: secretkey
+    command: server /data --console-address ":9001"
+    ports:
+      - 9002:9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  redis:
+    image: centos/redis-5-centos7
+    ports:
+      - "6380:6379"
+    volumes:
+      - ems_dev_redis:/var/lib/redis/data
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8026:8081"
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  ems_dev_data01:
+  ems_dev_data02:
+  ems_dev_redis:
+  ems_dev_s3:
+  ems_dev_postgres:
+  ems_dev_mariadb:
+
+networks:
+  default:
+    external:
+      name: local-dev
