@@ -22,7 +22,7 @@
 
 ```dotenv
 EMS_ELASTICSEARCH_HOSTS='["http://localhost:9201","http://localhost:9202"]'
-EMS_STORAGES='[{"type":"s3","usage":"cache","upload-folder":"/tmp/ems-uploads","bucket":"demo","credentials":{"version":"2006-03-01","credentials":{"key":"accesskey","secret":"secretkey"},"region":"us-east-1","endpoint":"http://localhost:9002","use_path_style_endpoint":true}}]'
+EMS_STORAGES='[{"type":"s3","usage":"cache","upload-folder":"/tmp/ems-uploads","bucket":"demo","credentials":{"version":"2006-03-01","credentials":{"key":"accesskey","secret":"secretkey"},"region":"us-east-1","endpoint":"http://localhost:9001","use_path_style_endpoint":true}}]'
 EMSCO_TIKA_SERVER='http://localhost:9998'
 MAILER_URL=localhost:1025
 
