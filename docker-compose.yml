@@ -7,11 +7,9 @@ services:
     environment:
       - node.name=es01
       - cluster.name=es7-docker-cluster
-      - discovery.seed_hosts=es02
-      - cluster.initial_master_nodes=es01,es02
-      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
-      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "9201:9200"
@@ -22,15 +20,15 @@ services:
     volumes:
       - ems_dev_data01:/usr/share/elasticsearch/data
   es02:
+    depends_on:
+      - es01
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
     environment:
       - node.name=es02
       - cluster.name=es7-docker-cluster
-      - discovery.seed_hosts=es01
-      - cluster.initial_master_nodes=es01,es02
-      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
-      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "9202:9200"
@@ -40,6 +38,25 @@ services:
         hard: -1
     volumes:
       - ems_dev_data02:/usr/share/elasticsearch/data
+  es03:
+    depends_on:
+      - es02
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+    environment:
+      - node.name=es03
+      - cluster.name=es7-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ports:
+      - "9203:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ems_dev_data03:/usr/share/elasticsearch/data
   kibana:
     image: docker.elastic.co/kibana/kibana:7.9.2
     environment:
@@ -120,6 +137,7 @@ services:
 volumes:
   ems_dev_data01:
   ems_dev_data02:
+  ems_dev_data03:
   ems_dev_redis:
   ems_dev_s3:
   ems_dev_postgres:
