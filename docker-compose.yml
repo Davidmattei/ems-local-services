@@ -110,7 +110,7 @@ services:
       MINIO_SECRET_KEY: secretkey
     command: server --address ":9099" --console-address ":9000" /data
     ports:
-      - "9000:9000"
+      - "9001:9000"
       - "9099:9099"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9099/minio/health/live" ]
