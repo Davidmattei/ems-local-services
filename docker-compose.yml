@@ -9,7 +9,9 @@ services:
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "9201:9200"
@@ -20,15 +22,15 @@ services:
     volumes:
       - ems_dev_data01:/usr/share/elasticsearch/data
   es02:
-    depends_on:
-      - es01
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
     environment:
       - node.name=es02
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es03
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "9202:9200"
@@ -47,7 +49,9 @@ services:
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es02
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     ports:
       - "9203:9200"
@@ -106,7 +110,7 @@ services:
       MINIO_SECRET_KEY: secretkey
     command: server /data --console-address ":9001"
     ports:
-      - 9002:9000
+      - 9001:9001
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
