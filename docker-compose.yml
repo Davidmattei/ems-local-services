@@ -149,6 +149,4 @@ volumes:
   ems_dev_mariadb:
 
 networks:
-  default:
-    external:
-      name: local-dev
+    local-dev: ~
