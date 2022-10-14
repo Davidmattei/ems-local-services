@@ -24,7 +24,7 @@
 EMS_ELASTICSEARCH_HOSTS='["http://localhost:9201","http://localhost:9202","http://localhost:9203"]'
 EMS_STORAGES='[{"type":"s3","usage":"cache","upload-folder":"/tmp/ems-uploads","bucket":"demo","credentials":{"version":"2006-03-01","credentials":{"key":"accesskey","secret":"secretkey"},"region":"us-east-1","endpoint":"http://localhost:9099","use_path_style_endpoint":true}}]'
 EMSCO_TIKA_SERVER='http://localhost:9998'
-MAILER_URL=localhost:1025
+MAILER_URL=smtp://localhost:1025
 
 REDIS_HOST=localhost
 REDIS_PORT=6380
